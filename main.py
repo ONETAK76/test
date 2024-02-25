@@ -1,17 +1,20 @@
 import logging
 import asyncio
 from aiogram import types
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, BotCommand, FSInputFile, URLInputFile, BufferedInputFile
 from config_reader import config
 from aiogram.filters import Command
 from aiogram.utils.media_group import MediaGroupBuilder
+from handlers import ordering_drinks
 
 bot = Bot(token=config.bot_token.get_secret_value())
 dp = Dispatcher()
 
 logging.basicConfig(level=logging.INFO)
+
+dp.include_routers(ordering_drinks.router)
 
 big_button_1 = InlineKeyboardButton(
     text='Режим работы ✅',

@@ -8,8 +8,6 @@ from keyboards.simple_row import make_row_keyboard
 
 router = Router()
 
-# Эти значения далее будут подставляться в итоговый текст, отсюда
-# такая на первый взгляд странная форма прилагательных
 available_drinks_vkus = ["Кислый", "Сладкий", "Горький", "Кисло-сладкий"]
 available_drinks_sizes = ["Водка", "Джин", "Ром", "Текила", "Виски"]
 
@@ -26,11 +24,7 @@ async def cmd_drinks(message: Message, state: FSMContext):
         text="Какой коктейль по вкусу желаете?",
         reply_markup=make_row_keyboard(available_drinks_vkus)
     )
-    # Устанавливаем пользователю состояние "выбирает название"
     await state.set_state(OrderDrinks.choosing_drinks_name)
-
-# Этап выбора блюда #
-
 
 @router.message(OrderDrinks.choosing_drinks_name, F.text.in_(available_drinks_vkus))
 async def drinks_chosen(message: Message, state: FSMContext):
@@ -41,11 +35,6 @@ async def drinks_chosen(message: Message, state: FSMContext):
     )
     await state.set_state(OrderDrinks.choosing_drinks_size)
 
-
-
-# В целом, никто не мешает указывать стейты полностью строками
-# Это может пригодиться, если по какой-то причине
-# ваши названия стейтов генерируются в рантайме (но зачем?)
 @router.message(StateFilter("OrderDrinks:choosing_drinks_name"))
 async def drinks_chosen_incorrectly(message: Message):
     await message.answer(
@@ -54,7 +43,6 @@ async def drinks_chosen_incorrectly(message: Message):
         reply_markup=make_row_keyboard(available_drinks_vkus)
     )
 
-# Этап выбора размера порции и отображение сводной информации #
 @router.message(OrderDrinks.choosing_drinks_size, F.text.in_(available_drinks_sizes))
 async def drinks_size_chosen(message: Message, state: FSMContext):
     user_data = await state.get_data()
@@ -63,7 +51,7 @@ async def drinks_size_chosen(message: Message, state: FSMContext):
              f"Тут пока ничего!: ",
         reply_markup=ReplyKeyboardRemove()
     )
-    # Сброс состояния и сохранённых данных у пользователя
+    
     await state.clear()
 
 
